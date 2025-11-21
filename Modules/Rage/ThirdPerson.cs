@@ -1,19 +1,28 @@
 ﻿using Titled_Gui.Data.Game;
 
-namespace Titled_Gui.Modules.Rage
+public static class ThirdPerson
 {
-    public static class ThirdPersonController
+    public static bool Enabled = false;
+
+    public static void Run()
     {
-        public static bool Enabled = false;
-        private static int tpVar = 0;
+        if (!Enabled)
+            return;
 
-        public static void Run()
-        {
-            nint lp = GameState.LocalPlayerPawn;
-            if (lp == 0) return;
+        // Get camera services pointer
+        nint cam = GameState.swed.ReadPointer(GameState.LocalPlayerPawn + Offsets.m_pCameraServices);
+        if (cam == 0)
+            return;
 
-            tpVar = Enabled ? 1 : 0;
-            GameState.swed.WriteInt(lp + 0x16C, tpVar); // m_thirdPersonShoulder
-        }
+        GameState.swed.WriteInt(cam + Offsets.m_iCameraMode, 1); // enable TP
+    }
+
+    public static void Disable()
+    {
+        nint cam = GameState.swed.ReadPointer(GameState.LocalPlayerPawn + Offsets.m_pCameraServices);
+        if (cam == 0)
+            return;
+
+        GameState.swed.WriteInt(cam + Offsets.m_iCameraMode, 0);
     }
 }

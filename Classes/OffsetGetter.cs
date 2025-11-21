@@ -46,6 +46,7 @@ namespace Titled_Gui.Classes
             { "jump", new() { new Offset("jump"), new Offset("+jump") } },
             { "m_pCameraServices", new() { new Offset("m_pCameraServices"), new Offset("m_CameraServices") } },
             { "m_iFOV", new() { new Offset("m_iFOV"), new Offset("m_iDesiredFOV") } },
+            
             { "m_bIsScoped", new() { new Offset("m_bIsScoped"), new Offset("m_bIsScopedIn") } },
             { "m_iHealth", new() { new Offset("m_iHealth") } },
             { "m_bSpotted", new() { new Offset("m_bSpotted"), new Offset("m_bSpottedBy") } },

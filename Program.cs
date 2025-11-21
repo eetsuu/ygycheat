@@ -6,8 +6,7 @@ using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
 try
-{
-    // initialization
+{ // initialization
     EntityManager entityManager = new();
     await OffsetGetter.UpdateOffsetsAsync();
 

@@ -1,12 +1,30 @@
 ﻿using System.Numerics;
+using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Data.Entity
 {
     public class Entity
     {
+        public int ActiveWeaponID
+        {
+            get
+            {
+                IntPtr weaponServices = PawnAddress + Offsets.m_pWeaponServices;
+                IntPtr h = GameState.swed.ReadPointer(weaponServices + Offsets.m_hActiveWeapon);
+                if (h == 0) return 0;
+
+                int index = (int)((h & 0x7FFF) - 1);
+                IntPtr weapon = GameState.swed.ReadPointer(GameState.client + Offsets.dwEntityList + index * 0x20);
+                if (weapon == 0) return 0;
+
+                return GameState.swed.ReadInt(weapon + Offsets.m_iItemDefinitionIndex);
+            }
+        }
+
         public Vector3 Position { get; set; } //entity Position in 3D space
         public Vector3 View { get; set; } // View offset of the entity
         public Vector3 Origin { get; set; } // Origin of the entity
+        
         public Vector2 Position2D { get; set; } // entity Position in 2D space (screen space)
         public Vector2 ViewPosition2D { get; set; } // View offset Position in 2D space (screen space)
         public Vector2 Head2D { get; set; } // Head Position in 2D space (screen space)
@@ -53,5 +71,7 @@ namespace Titled_Gui.Data.Entity
         public IntPtr SpottedByState { get; set; }
         public Vector3 AngEyeAngles { get; set; }
         public Vector3 GunGameImmunityColor { get; set; }
+        
     }
+    
 }

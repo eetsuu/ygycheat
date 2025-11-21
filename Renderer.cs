@@ -574,6 +574,11 @@ namespace Titled_Gui
                             {
                                 Configs.LoadConfig(Configs.SelectedConfig);
                             }
+
+
+
+                            
+
                             ImGui.EndChild();
                             ImGui.Columns(1);
                             break;
@@ -656,10 +661,21 @@ namespace Titled_Gui
 
                             RenderBoolSetting("Break Legs", ref AntiAim.BreakLegs);
                             RenderBoolSetting("No Duck Cooldown", ref AntiAim.NoDuckDelay);
+                            RenderBoolSetting("Third Person", ref ThirdPerson.Enabled);
+                            
+                            
+                            
+
+                            
+
+
+                            
+
 
                             // OPTIONAL — cool animated AA preview circle
                             RenderCategoryHeader("Anti-Aim Preview");
-                            DrawAntiAimPreview();
+                            AAPreview.DrawPreview();
+
 
                             ImGui.EndChild();
 
@@ -717,6 +733,22 @@ namespace Titled_Gui
 
         public void RunAllModules()
         {
+            if (AntiAim.Enabled)
+                AntiAim.Run();
+
+            if (Resolver.Enabled)
+            {
+                foreach (var e in GameState.Entities)
+                    e.ViewAngles = Resolver.Resolve(e);
+            }
+        
+
+            ThirdPerson.Run();
+            SilentAim.Run();
+            DoubleTap.Run();
+            AntiAim.Run();
+
+
             try
             {
                 HitStuff.CreateHitText();
