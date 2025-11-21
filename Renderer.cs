@@ -33,12 +33,20 @@ namespace Titled_Gui
         public static float fpsUpdateInterval = 1.0f;
         public static float timeSinceLastUpdate = 0.0f;
         public static float lastFPS = 0.0f;
-        public static Vector4 accentColor = new(0.26f, 0.59f, 0.98f, 1.00f);
-        public static Vector4 SidebarColor = new(0.07f, 0.075f, 0.09f, 1.0f);
-        public static Vector4 MainContentCol = new(0.094f, 0.102f, 0.118f, 1.0f);
-        public static Vector4 TextCol = new(0.274f, 0.317f, 0.450f, 1.0f);
-        public static Vector4 HeaderStartCol = TextCol;
-        public static Vector4 HeaderEndCol = new(1, 1, 1, 0);
+        public static Vector4 accentColor     = new(0.82f, 0.24f, 1.00f, 1.00f); // neon violet
+        public static Vector4 SidebarColor    = new(0.06f, 0.02f, 0.10f, 1.00f); // deep purple
+        public static Vector4 MainContentCol  = new(0.04f, 0.015f, 0.07f, 1.00f);// darker purple
+        public static Vector4 TextCol         = new(0.70f, 0.55f, 0.92f, 1.00f); // soft lilac
+        public static Vector4 HeaderStartCol  = new(0.55f, 0.10f, 0.85f, 1.0f);
+        public static Vector4 HeaderEndCol    = new(0.95f, 0.30f, 1.0f, 0.55f);
+
+        public static Vector4 trackCol = new(0.18f, 0.05f, 0.22f, 1f);
+        public static Vector4 knobOff  = new(0.30f, 0.12f, 0.38f, 1f);
+        public static Vector4 knobOn   = new(0.92f, 0.32f, 1.00f, 1f);
+
+        public static Vector4 ParticleColor = new(0.90f, 0.32f, 1.0f, 1f);
+        public static Vector4 LineColor     = new(0.75f, 0.20f, 1.0f, 0.45f);
+
         public static float windowAlpha = 1f;
         private float animationSpeed = 0.15f;
         private static float WidgetColumnWidth = 160f;
@@ -56,13 +64,10 @@ namespace Titled_Gui
         public static bool IsTextFont48Loaded => !TextFont48.Equals(default(ImFontPtr));
         public static bool IsTextFont60Loaded => !TextFont60.Equals(default(ImFontPtr));
         public static bool IsIconFontLoaded => !IconFont.Equals(default(ImFontPtr));
-        public static Vector4 trackCol = new(0.18f, 0.18f, 0.20f, 1f);
-        public static Vector4 knobOff = new(0.15f, 0.15f, 0.15f, 1f);
-        public static Vector4 knobOn = new(0.2745f, 0.3176f, 0.4510f, 1.0f);
+
         public static bool IsIconFont1Loaded => !IconFont1.Equals(default(ImFontPtr));
         public static bool IsGunIconFontLoaded => !GunIconsFont.Equals(default(ImFontPtr));
-        public static Vector4 ParticleColor = new(1f, 1f, 1f, 1f);
-        public static Vector4 LineColor = new(1, 1, 1, 0.33f);
+
         public static float ParticleRadius = 2.5f;
         public static Vector2 BaseParticlePos = new();
         public static int NumberOfParticles = 50;
@@ -574,7 +579,7 @@ namespace Titled_Gui
                             break;
 
 
-                        case 4: // settings
+                        case 5: // settings
                             ImGui.Columns(2, "SettingsColumn", true);
 
                             ImGui.BeginChild("LeftColumn");
@@ -606,6 +611,61 @@ namespace Titled_Gui
 
                             ImGui.Columns(1);
                             break;
+                        
+                        case 4: // NEW RAGE TAB
+                            ImGui.Columns(2, "RageColumns", true);
+
+                            // LEFT SIDE — CORE RAGEBOT LOGIC
+                            ImGui.BeginChild("LeftRage");
+
+                            RenderCategoryHeader("RAGEBOT CORE");
+
+                            RenderBoolSetting("Enable Silent Aim", ref SilentAim.Enabled);
+                            RenderFloatSlider("Silent FOV", ref SilentAim.FOV, 1, 180, "%.0f");
+
+                            RenderBoolSetting("Auto Fire", ref RageManager.AutoShoot);
+                            RenderBoolSetting("Auto Stop", ref RageManager.AutoStop);
+                            RenderBoolSetting("Auto Scope", ref RageManager.AutoScope);
+                            RenderBoolSetting("Resolver", ref RageManager.ResolverEnabled);
+
+                            RenderBoolSetting("Team Check", ref RageManager.TeamCheck);
+                            RenderBoolSetting("Visible Check", ref RageManager.VisibleCheck);
+
+                            RenderIntCombo("Hitbox", ref RageManager.TargetBone, RageManager.BoneNames, RageManager.BoneNames.Length);
+                            RenderFloatSlider("Hitchance", ref RageManager.Hitchance, 1, 100, "%.0f");
+
+                            ImGui.EndChild();
+                            ImGui.NextColumn();
+
+                            // RIGHT SIDE — AUTOWALL + ANTI-AIM
+                            ImGui.BeginChild("RightRage");
+
+                            RenderCategoryHeader("AUTOWALL");
+
+                            RenderBoolSetting("Enable AutoWall", ref AutoWall.Enabled);
+                            RenderFloatSlider("Min Damage", ref AutoWall.MinDamage, 1, 130, "%.0f");
+
+                            RenderCategoryHeader("ANTI-AIM");
+
+                            RenderBoolSetting("Enable Anti-Aim", ref AntiAim.Enabled);
+                            RenderIntCombo("Pitch", ref AntiAim.PitchMode, AntiAim.PitchModes, AntiAim.PitchModes.Length);
+                            RenderIntCombo("Yaw", ref AntiAim.YawMode, AntiAim.YawModes, AntiAim.YawModes.Length);
+
+                            RenderFloatSlider("Yaw Add", ref AntiAim.YawAdd, -180f, 180f);
+                            RenderFloatSlider("Desync Amount", ref AntiAim.DesyncAmount, 0f, 100f);
+
+                            RenderBoolSetting("Break Legs", ref AntiAim.BreakLegs);
+                            RenderBoolSetting("No Duck Cooldown", ref AntiAim.NoDuckDelay);
+
+                            // OPTIONAL — cool animated AA preview circle
+                            RenderCategoryHeader("Anti-Aim Preview");
+                            DrawAntiAimPreview();
+
+                            ImGui.EndChild();
+
+                            ImGui.Columns(1);
+                            break;
+
                     }
                 }
                 ImGui.EndChild();
